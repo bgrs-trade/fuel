@@ -1,0 +1,17 @@
+{
+  "name": "የቤኒሻንጉል ጉሙዝ ንግድና ገበያ ልማት ቢሮ - የነዳጅ ኮታ መከታተያ",
+  "short_name": "የነዳጅ ኮታ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090d16",
+  "theme_color": "#0f5132",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

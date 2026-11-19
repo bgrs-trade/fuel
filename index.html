@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>የቤኒሻንጉል ጉሙዝ ንግድና ገበያ ልማት ቢሮ - የነዳጅ ኮታ መከታተያ</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <meta name="theme-color" content="#090d16" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans Ethiopic', sans-serif;
+      background-color: #090d16;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .auth-card {
+      background: linear-gradient(145deg, #111827 0%, #0b0f19 100%);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .auth-input {
+      background: #1f2937;
+      border: 1px solid #374151;
+      color: #f3f4f6;
+    }
+    .auth-input:focus {
+      border-color: #f59e0b;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    }
+    .tab-active {
+      color: #0f5132;
+      border-top: 3px solid #0f5132;
+      background-color: #ecfdf5;
+    }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW:', err));
+      });
+    }
+  </script>
+</head>
+<body class="min-h-screen flex justify-center items-center">
+
+  <!-- AUTH CONTAINER (Login / Signup) -->
+  <div id="authContainer" class="w-full max-w-md min-h-screen sm:min-h-0 sm:rounded-3xl auth-card p-6 flex flex-col justify-center relative overflow-hidden transition-all duration-500">
+    <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header Logos & Title -->
+    <div class="text-center mb-6 z-10">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <!-- BGRS Official Logo (Front) -->
+        <div class="w-14 h-14 rounded-2xl bg-white p-1 shadow-lg border border-amber-300/40 overflow-hidden flex items-center justify-center">
+          <img
+            src="https://tse3.mm.bing.net/th/id/OIP.vZoExCnBcfBWQRNrxksXlwHaHR?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+            alt="BGRS Official Logo"
+            class="w-full h-full object-contain rounded-xl"
+            onerror="this.onerror=null; this.src='https://th.bing.com/th/id/R.bd9a04c429c171f05641136bc64b1797?rik=zjQFyDSVfxJOBg&pid=ImgRaw&r=0';"
+          />
+        </div>
+        <!-- Fuel Pump App Icon (End) -->
+        <div class="w-14 h-14 rounded-2xl bg-[#0f5132] p-1 shadow-lg border border-amber-400/50 overflow-hidden flex items-center justify-center">
+          <img src="icon.png" alt="Fuel Icon" class="w-full h-full object-cover rounded-xl" />
+        </div>
+      </div>
+      <h2 id="authTitle" class="text-lg font-extrabold text-white">ግባ (Login)</h2>
+      <p id="authSubtitle" class="text-xs text-amber-300 font-semibold mt-1">ቤኒሻንጉል ጉሙዝ ንግድና ገበያ ልማት ቢሮ</p>
+    </div>
+
+    <!-- Error/Success Toast inside auth -->
+    <div id="authToast" class="hidden mb-4 p-3 rounded-xl text-xs font-semibold text-center leading-relaxed"></div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 z-10">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">ዩዘርናም (Username)</label>
+        <input id="loginUser" type="text" required placeholder="ስምዎን ያስገቡ" class="w-full text-xs auth-input rounded-xl p-3" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">የሚስጥር ቁጥር (Password)</label>
+        <input id="loginPass" type="password" required placeholder="••••••••" class="w-full text-xs auth-input rounded-xl p-3" />
+      </div>
+      <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 active:scale-98 transition">
+        ግባ (Login)
+      </button>
+      <div class="text-center pt-2">
+        <span class="text-xs text-slate-400">አካውንት የለዎትም? </span>
+        <button type="button" onclick="switchAuthMode('signup')" class="text-xs font-bold text-amber-400 hover:underline">ይመዝገቡ (Sign Up)</button>
+      </div>
+    </form>
+
+    <!-- SIGNUP FORM (Requires Approval before Entering App) -->
+    <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-3.5 hidden z-10">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">ሙሉ ስም (Full Name)</label>
+        <input id="signupName" type="text" required placeholder="ሙሉ ስምዎ" class="w-full text-xs auth-input rounded-xl p-2.5" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">ዩዘርናም (Username)</label>
+        <input id="signupUser" type="text" required placeholder="ዩዘርናም ይምረጡ" class="w-full text-xs auth-input rounded-xl p-2.5" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">የሚስጥር ቁጥር (Password)</label>
+        <input id="signupPass" type="password" required placeholder="••••••••" class="w-full text-xs auth-input rounded-xl p-2.5" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">የመለያ ሚና ይምረጡ (Select Role)</label>
+        <select id="signupRole" class="w-full text-xs auth-input rounded-xl p-2.5">
+          <option value="supervisor">ተቆጣጣሪ (Supervisor - በአድሚን የሚጸድቅ)</option>
+          <option value="admin">አድሚን (Admin - በሱፐር አድሚን የሚጸድቅ)</option>
+        </select>
+      </div>
+      <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 text-[11px] text-amber-200 leading-relaxed">
+        ⚠️ ማሳሰቢያ፡ ከተመዘገቡ በኋላ የሚመለከተው አስተዳዳሪ እስኪያጸድቅልዎት ድረስ ወደ አፑ መግባት አይችሉም።
+      </div>
+      <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/20 active:scale-98 transition">
+        ተመዝገብና ማረጋገጫ ጠብቅ (Register)
+      </button>
+      <div class="text-center pt-1">
+        <span class="text-xs text-slate-400">ቀደም ብሎ አካውንት አለዎት? </span>
+        <button type="button" onclick="switchAuthMode('login')" class="text-xs font-bold text-amber-400 hover:underline">ግባ (Login)</button>
+      </div>
+    </form>
+
+    <!-- EMPLOYEE REGISTRATION REQUEST CODE BOX (Shown after signup or when checking status) -->
+    <div id="regRequestCodeBox" class="hidden mt-4 p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 space-y-2.5 z-10">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-extrabold text-emerald-300">📤 የምዝገባ መጠየቂያ ኮድ (Request Code)</span>
+        <button type="button" onclick="document.getElementById('regRequestCodeBox').classList.add('hidden')" class="text-slate-400 hover:text-white text-xs font-bold">✕</button>
+      </div>
+      <p class="text-[10.5px] text-slate-200 leading-relaxed">
+        ይህንን ኮድ ኮፒ (Copy) በማድረግ ወይም በቀጥታ በ WhatsApp / Telegram ለሱፐር አድሚኑ (Super Admin) ይላኩት። ሲያጸድቅልዎት ወዲያውኑ መግባት ይችላሉ።
+      </p>
+      <textarea id="generatedReqCode" rows="2" readonly class="w-full text-[10px] font-mono bg-slate-950 text-amber-300 border border-slate-700 rounded-xl p-2 select-all focus:outline-none"></textarea>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="copyRegRequestCode()" class="py-2 px-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-[11px] shadow">
+          📋 ኮፒ አድርግ (Copy)
+        </button>
+        <button type="button" onclick="shareRegRequestCode()" class="py-2 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] shadow">
+          📲 ላክ (Share / WhatsApp)
+        </button>
+      </div>
+    </div>
+
+    <!-- EMPLOYEE IMPORT APPROVAL CODE BOX (When Super Admin sends back Approval Code) -->
+    <div class="mt-3 pt-3 border-t border-slate-800/80 z-10">
+      <button type="button" onclick="toggleEmployeeApproveBox()" class="w-full text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center justify-center gap-1">
+        <span>🔑 ከአድሚን የተላከ የማረጋገጫ ኮድ አለዎት? እዚህ ያስገቡ</span>
+      </button>
+      <div id="employeeApproveBox" class="hidden mt-2.5 p-3 rounded-xl bg-slate-900/90 border border-slate-700 space-y-2">
+        <p class="text-[10px] text-slate-300">ሱፐር አድሚኑ ያጸደቀልዎትን ኮድ (Approval Code) እዚህ Paste አድርገው ይጫኑ፦</p>
+        <input id="employeeApprovalInput" type="text" placeholder="BGRS-APP-..." class="w-full text-[11px] font-mono auth-input rounded-lg p-2" />
+        <button type="button" onclick="applyEmployeeApprovalCode()" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">
+          ✅ አካውንቴን አግብር (Activate Account)
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MAIN APP CONTAINER (Hidden until login) -->
+  <div id="appContainer" class="w-full max-w-md bg-slate-50 min-h-screen shadow-2xl flex flex-col relative pb-20 hidden">
+    
+    <!-- Top Header: [BGRS Logo] -> [Bureau Name] -> [Fuel Pump Icon] -->
+    <header class="bg-gradient-to-r from-[#0f5132] to-[#146c43] text-white p-3.5 sticky top-0 z-30 shadow-md">
+      <div class="flex items-center justify-between gap-2">
+        
+        <!-- Left: BGRS Regional Logo (ከቢሮው ስያሜ ፊት ለፊት) -->
+        <div class="w-10 h-10 rounded-xl bg-white p-0.5 shrink-0 flex items-center justify-center shadow overflow-hidden border border-amber-300/50">
+          <img
+            src="https://tse3.mm.bing.net/th/id/OIP.vZoExCnBcfBWQRNrxksXlwHaHR?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+            alt="BGRS Official Logo"
+            class="w-full h-full object-contain rounded-lg"
+            onerror="this.onerror=null; this.src='https://th.bing.com/th/id/R.bd9a04c429c171f05641136bc64b1797?rik=zjQFyDSVfxJOBg&pid=ImgRaw&r=0';"
+          />
+        </div>
+
+        <!-- Center: Bureau Name -->
+        <div class="flex-1 text-center min-w-0 px-1">
+          <h1 class="text-[12px] sm:text-xs font-extrabold leading-snug text-white">
+            ቤኒሻንጉል ጉሙዝ ንግድና ገበያ ልማት ቢሮ
+          </h1>
+          <p class="text-[10px] text-emerald-100 truncate">የነዳጅ እና ቤንዚን ኮታ መከታተያ (27 ማደያዎች)</p>
+        </div>
+
+        <!-- Right: Fuel Pump Logo (ከቢሮው ስያሜ መጨረሻ ላይ) + Logout -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <div class="w-9 h-9 rounded-xl bg-[#0f5132] border border-amber-400 p-0.5 flex items-center justify-center shadow overflow-hidden">
+            <img src="icon.png" alt="Fuel Pump Logo" class="w-full h-full object-cover rounded-lg" />
+          </div>
+          <button onclick="logout()" title="ውጣ" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2 py-2 rounded-lg shadow active:scale-95">
+            ውጣ
+          </button>
+        </div>
+      </div>
+
+      <!-- Offline / Online & Sync Status Bar -->
+      <div class="mt-2.5 flex items-center justify-between bg-emerald-950/50 px-2.5 py-1.5 rounded-xl border border-emerald-700/50 text-[10px]">
+        <div class="flex items-center gap-1.5">
+          <span id="netDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="netStatusText" class="font-bold text-emerald-100">ኦንላይን (Online)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="pendingSyncBadge" class="text-amber-300 font-bold">ያልተላኩ (Sync): 0</span>
+          <button type="button" onclick="syncOfflineRecords(true)" id="btnSyncNow" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-2 py-0.5 rounded-md shadow-xs active:scale-95 transition">
+            🔄 Sync አድርግ
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Strip -->
+      <div class="grid grid-cols-3 gap-2 mt-2.5 pt-2 border-t border-emerald-700/60 text-center">
+        <div class="bg-emerald-900/40 rounded-lg p-1.5">
+          <div class="text-[10px] text-emerald-200">ጠቅላላ የገባ (ሊትር)</div>
+          <div id="statTotalIn" class="text-sm font-extrabold text-white">0</div>
+        </div>
+        <div class="bg-emerald-900/40 rounded-lg p-1.5">
+          <div class="text-[10px] text-emerald-200">የተሰራጨ (ሊትር)</div>
+          <div id="statTotalOut" class="text-sm font-extrabold text-amber-300">0</div>
+        </div>
+        <div class="bg-emerald-900/40 rounded-lg p-1.5">
+          <div class="text-[10px] text-emerald-200">ቀሪ ክምችት (ሊትር)</div>
+          <div id="statRemaining" class="text-sm font-extrabold text-emerald-300">0</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed top-28 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg text-center max-w-[90%]"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-3.5 space-y-4 overflow-y-auto">
+
+      <!-- TAB 1: DASHBOARD & STATIONS (ማደያዎች) -->
+      <section id="tab-stations" class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-800">የከተሞች እና ማደያዎች ክምችት</h2>
+          <select id="cityFilter" onchange="renderStations()" class="text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700">
+            <option value="ALL">ሁሉም ከተሞች (27)</option>
+            <option value="አሶሳ">አሶሳ ከተማ (12)</option>
+            <option value="ባምባሲ">ባምባሲ ከተማ (5)</option>
+            <option value="ግልገል በለስ">ግልገል በለስ (4)</option>
+            <option value="ቡለን">ቡለን ከተማ (2)</option>
+            <option value="ፓዊ">ፓዊ ከተማ (2)</option>
+            <option value="ማንቡክ">ማንቡክ ከተማ (2)</option>
+          </select>
+        </div>
+        <div id="stationsList" class="space-y-2.5"></div>
+      </section>
+
+      <!-- TAB 2: LOG QUOTA INTAKE (የነዳጅ ኮታ መመዝገቢያ) -->
+      <section id="tab-quota" class="hidden space-y-3">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between border-b pb-2">
+            <h2 class="text-sm font-bold text-[#0f5132]">አዲስ የመጣ የነዳጅ ኮታ መመዝገቢያ</h2>
+            <span class="text-[10px] bg-emerald-50 text-[#0f5132] font-bold px-2 py-0.5 rounded-md">Offline ዝግጁ</span>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">ከተማ ይምረጡ</label>
+            <select id="quotaCity" onchange="populateStationDropdown('quotaCity', 'quotaStation')" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-slate-50"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">የነዳጅ ማደያ ይምረጡ</label>
+            <select id="quotaStation" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-slate-50"></select>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የነዳጅ ዓይነት</label>
+              <select id="quotaFuelType" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-slate-50">
+                <option value="diesel">ናፍጣ (Gas Oil)</option>
+                <option value="benzine">ቤንዚን (Benzine)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">መጠን (በሊትር)</label>
+              <input id="quotaLiters" type="number" placeholder="ለምሳሌ: 20000" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የቦቴ መኪና ታርጋ</label>
+              <input id="quotaTruck" type="text" placeholder="ኢት-3-45892" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የደረሰኝ ቁጥር</label>
+              <input id="quotaReceipt" type="text" placeholder="REC-2026-01" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">የመዘገበው ተቆጣጣሪ ስም</label>
+            <input id="quotaInspector" type="text" placeholder="ሙሉ ስም ያስገቡ" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+          </div>
+          <button onclick="addQuota()" class="w-full bg-[#0f5132] hover:bg-emerald-800 text-white font-bold text-xs py-3 rounded-xl shadow active:scale-98 transition">
+            የመጣውን ኮታ መዝግብ (Save Quota)
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 3: DISTRIBUTION / DISPENSING (ስርጭት መመዝገቢያ እና ማጣሪያ) -->
+      <section id="tab-dispense" class="hidden space-y-3">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between border-b pb-2">
+            <h2 class="text-sm font-bold text-amber-700">ለተሽከርካሪ የተሞላ ነዳጅ መመዝገቢያ</h2>
+            <span class="text-[10px] bg-amber-50 text-amber-800 font-bold px-2 py-0.5 rounded-md">Offline ዝግጁ</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">ከተማ</label>
+              <select id="dispCity" onchange="populateStationDropdown('dispCity', 'dispStation')" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-slate-50"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">ማደያ</label>
+              <select id="dispStation" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-slate-50"></select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">ነዳጅ የገዛው አካል/ድርጅት (Buyer / Organization)</label>
+            <input id="dispBuyer" type="text" placeholder="የግለሰብ ወይም ድርጅት ስም" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የተሽከርካሪ ዓይነት</label>
+              <select id="dispVehicleType" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-slate-50">
+                <option value="ባጃጅ (Bajaj)">ባጃጅ (Bajaj)</option>
+                <option value="የህዝብ ማመላለሻ">የህዝብ ማመላለሻ</option>
+                <option value="የጭነት ተሽከርካሪ">የጭነት ተሽከርካሪ</option>
+                <option value="የመንግስት ተሽከርካሪ">የመንግስት ተሽከርካሪ</option>
+                <option value="የግል መኪና">የግል መኪና</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የተሽከርካሪ ታርጋ ቁጥር</label>
+              <input id="dispPlate" type="text" placeholder="ቤጉ-1-12345" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የነዳጅ ዓይነት</label>
+              <select id="dispFuelType" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-slate-50">
+                <option value="diesel">ናፍጣ (Gas Oil)</option>
+                <option value="benzine">ቤንዚን (Benzine)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የተሞላ መጠን (ሊትር)</label>
+              <input id="dispLiters" type="number" placeholder="ለምሳሌ: 40" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">ነዳጁን የሞላው ባለሙያ</label>
+              <input id="dispAttendant" type="text" placeholder="የባለሙያ ስም" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">የባለሙያ መለያ (ID)</label>
+              <input id="dispAttendantId" type="text" placeholder="AT-104" class="w-full text-xs border border-slate-300 rounded-xl p-2.5" />
+            </div>
+          </div>
+          <button onclick="recordDispense()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs py-3 rounded-xl shadow active:scale-98 transition">
+            መረጃውን አዘምን (Update Distribution)
+          </button>
+        </div>
+
+        <!-- Cascading Filter: 1. City -> 2. Stations in that City -> 3. From Date/Time to To Date/Time -->
+        <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between border-b pb-2">
+            <h3 class="text-xs font-bold text-slate-800">የስርጭት መዝገብ ማጣሪያ (Filter)</h3>
+            <span id="filteredTotalLiters" class="text-[11px] font-extrabold text-[#0f5132] bg-emerald-50 px-2.5 py-0.5 rounded-lg">ድምር: 0 ሊትር</span>
+          </div>
+
+          <!-- Step 1: City & Step 2: Station in that City -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 mb-1">1. ከተማ ይምረጡ</label>
+              <select id="filterCity" onchange="onFilterCityChange()" class="w-full text-xs border border-slate-300 rounded-xl p-2 bg-slate-50 font-semibold">
+                <option value="ALL">ሁሉም ከተሞች</option>
+                <option value="አሶሳ">አሶሳ ከተማ</option>
+                <option value="ባምባሲ">ባምባሲ ከተማ</option>
+                <option value="ግልገል በለስ">ግልገል በለስ</option>
+                <option value="ቡለን">ቡለን ከተማ</option>
+                <option value="ፓዊ">ፓዊ ከተማ</option>
+                <option value="ማንቡክ">ማንቡክ ከተማ</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 mb-1">2. የነዳጅ ማደያ ዝርዝር</label>
+              <select id="filterStation" onchange="renderLogs()" class="w-full text-xs border border-slate-300 rounded-xl p-2 bg-slate-50 font-semibold">
+                <option value="ALL">ሁሉም ማደያዎች</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 3: Date & Time Range (ከ____ ቀን ____ሰዓት እስከ _____ ቀን _____ ሰዓት) -->
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-2">
+            <div class="text-[10px] font-bold text-slate-700">3. በቀን እና ሰዓት ገደብ ፈልግ</div>
+            <div class="grid grid-cols-1 gap-2">
+              <div class="grid grid-cols-2 gap-1.5 items-center">
+                <div>
+                  <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">ከ ቀን (From Date):</label>
+                  <input id="filterFromDate" type="date" onchange="renderLogs()" class="w-full text-xs border border-slate-300 rounded-lg p-1.5 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">ሰዓት (From Time):</label>
+                  <input id="filterFromTime" type="time" onchange="renderLogs()" class="w-full text-xs border border-slate-300 rounded-lg p-1.5 bg-white" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-1.5 items-center">
+                <div>
+                  <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">እስከ ቀን (To Date):</label>
+                  <input id="filterToDate" type="date" onchange="renderLogs()" class="w-full text-xs border border-slate-300 rounded-lg p-1.5 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">ሰዓት (To Time):</label>
+                  <input id="filterToTime" type="time" onchange="renderLogs()" class="w-full text-xs border border-slate-300 rounded-lg p-1.5 bg-white" />
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button type="button" onclick="clearLogFilters()" class="text-[10px] text-blue-700 font-bold hover:underline">
+                ማጣሪያውን አጽዳ (Clear Filter)
+              </button>
+            </div>
+          </div>
+
+          <div id="recentLogs" class="space-y-2 max-h-64 overflow-y-auto text-xs pt-1"></div>
+        </div>
+      </section>
+
+      <!-- TAB 4: ANALYTICS & ROLE-BASED APPROVAL CENTER (Hidden for Supervisors) -->
+      <section id="tab-analytics" class="hidden space-y-3">
+        <!-- Low Stock Alerts -->
+        <div class="bg-red-50 border border-red-200 p-3.5 rounded-2xl">
+          <h3 class="text-xs font-bold text-red-800 mb-1.5">⚠️ የእጥረት ማስጠንቀቂያ (ከ20% በታች የቀራቸው)</h3>
+          <div id="lowStockList" class="text-xs text-red-700 space-y-1"></div>
+        </div>
+
+        <!-- City Analytics Bars -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-slate-800">የከተሞች የነዳጅ ስርጭት ትንታኔ</h3>
+            <button onclick="exportCSV()" class="text-[11px] bg-emerald-100 text-[#0f5132] font-bold px-2.5 py-1 rounded-lg">
+              📥 CSV ሪፖርት አውርድ
+            </button>
+          </div>
+          <div id="cityAnalytics" class="space-y-2.5 pt-1"></div>
+        </div>
+
+        <!-- SUPER ADMIN ONLY: Reset Data Control -->
+        <div id="superAdminResetBox" class="hidden bg-red-50/70 p-4 rounded-2xl shadow-sm border border-red-200 space-y-2">
+          <h3 class="text-xs font-bold text-red-800 flex items-center gap-1.5">
+            <span>🛡️</span> የሱፐር አድሚን (Super Admin) ልዩ መብት
+          </h3>
+          <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-red-100">
+            <div>
+              <div class="font-bold text-xs text-slate-800">የማደያ ክምችት እና ሪፖርት ዳግም ማስጀመሪያ</div>
+              <div class="text-[10px] text-slate-500">የሁሉንም ማደያዎች ክምችት ወደ ዜሮ (0) ይመልሳል።</div>
+            </div>
+            <button onclick="resetAllData()" class="bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] px-3 py-2 rounded-lg shadow shrink-0 ml-2">
+              ዳግም ጀምር (Reset)
+            </button>
+          </div>
+        </div>
+
+        <!-- APPROVAL & USER MANAGEMENT (Super Admin approves Admins & Supervisors; Admins approve Supervisors ONLY) -->
+        <div id="approvalControlPanel" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <div class="border-b pb-2">
+            <h3 id="approvalPanelTitle" class="text-xs font-bold text-[#0f5132]">
+              ✅ የተጠቃሚዎች ማረጋገጫ (Approval Center)
+            </h3>
+            <p id="approvalPanelDesc" class="text-[10px] text-slate-500 mt-0.5"></p>
+          </div>
+
+          <!-- IMPORT EMPLOYEE REQUEST CODE (Works 100% Offline & Without Backend!) -->
+          <div class="p-3 bg-emerald-50/90 rounded-xl border border-emerald-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="text-[11px] font-extrabold text-[#0f5132]">📥 የሰራተኛ ምዝገባ ኮድ ማስገቢያ (Import Request)</h4>
+              <span class="text-[9px] font-bold bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded">Offline / Direct</span>
+            </div>
+            <p class="text-[10px] text-slate-600 leading-relaxed">
+              ሰራተኛው ሲመዘገብ የላከልዎትን <b>BGRS-REQ-...</b> ኮድ እዚህ Paste በማድረግ ወዲያውኑ ማጽደቅ ይችላሉ፦
+            </p>
+            <div class="flex gap-1.5">
+              <input id="adminImportReqInput" type="text" placeholder="BGRS-REQ-..." class="flex-1 text-[11px] font-mono bg-white border border-emerald-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0f5132]" />
+              <button type="button" onclick="importAndApproveRequestCode()" class="px-3 py-1.5 bg-[#0f5132] hover:bg-emerald-800 text-white font-bold text-[10px] rounded-lg shrink-0 shadow">
+                አስገባና አጽድቅ
+              </button>
+            </div>
+            <!-- Generated Approval Code to send back to employee -->
+            <div id="adminGeneratedApprovalBox" class="hidden mt-2 p-2.5 bg-white rounded-lg border border-amber-300 space-y-1.5">
+              <p class="text-[10px] font-bold text-amber-800">✅ ጸድቋል! ይህን የማረጋገጫ ኮድ ለሰራተኛው መልሰው ይላኩለት፦</p>
+              <div class="flex gap-1.5">
+                <input id="adminGeneratedApprovalCode" type="text" readonly class="flex-1 text-[10px] font-mono bg-slate-100 border border-slate-300 rounded px-2 py-1 select-all" />
+                <button type="button" onclick="copyAdminApprovalCode()" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-[10px] rounded">
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OPTIONAL LIVE CLOUD SYNC (Firebase Realtime DB URL) -->
+          <details class="bg-slate-50 rounded-xl border border-slate-200 p-2.5">
+            <summary class="text-[11px] font-bold text-slate-700 cursor-pointer flex items-center justify-between">
+              <span>☁️ ቀጥታ የኢንተርኔት Sync ማገናኛ (Optional Live Cloud Sync)</span>
+              <span id="cloudSyncBadge" class="text-[9px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">Local</span>
+            </summary>
+            <div class="mt-2.5 space-y-2 pt-2 border-t border-slate-200">
+              <p class="text-[10px] text-slate-600 leading-relaxed">
+                በሁሉም ስልኮች ላይ ምዝገባዎች በቀጥታ እንዲታዩ ከፈለጉ፣ ነጻ <b>Firebase Realtime Database URL</b> እዚህ ያስገቡ (ምሳሌ: <code>https://your-app.firebaseio.com</code>)፦
+              </p>
+              <div class="flex gap-1.5">
+                <input id="firebaseUrlInput" type="url" placeholder="https://....firebaseio.com" class="flex-1 text-[10px] font-mono bg-white border border-slate-300 rounded-lg px-2 py-1.5" />
+                <button type="button" onclick="saveCloudSyncUrl()" class="px-2.5 py-1.5 bg-blue-700 hover:bg-blue-800 text-white font-bold text-[10px] rounded-lg">
+                  አስቀምጥ
+                </button>
+              </div>
+              <button type="button" onclick="pullUsersFromCloud(true)" class="w-full py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-[10px] rounded-lg">
+                🔄 አዲስ ተመዝጋቢዎችን ከ Cloud አምጣ (Refresh Requests)
+              </button>
+            </div>
+          </details>
+
+          <!-- Pending Approvals Queue -->
+          <div>
+            <h4 class="text-[11px] font-bold text-amber-700 mb-1.5">⏳ ማረጋገጫ የሚጠብቁ (Pending Requests)</h4>
+            <div id="pendingApprovalsList" class="space-y-2"></div>
+          </div>
+
+          <!-- Approved Active Users -->
+          <div class="pt-2 border-t">
+            <h4 class="text-[11px] font-bold text-slate-700 mb-1.5">👥 የጸደቁ ተጠቃሚዎች (Approved Users)</h4>
+            <div id="approvedUsersList" class="space-y-2 max-h-52 overflow-y-auto"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation (Dynamic grid: 3 tabs for Supervisor, 4 tabs for Admin/SuperAdmin) -->
+    <nav id="bottomNav" class="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 grid grid-cols-4 text-center text-[11px] font-bold text-slate-500 z-30 shadow-lg">
+      <button onclick="switchTab('stations')" id="nav-stations" class="py-2.5 flex flex-col items-center gap-0.5 tab-active">
+        <span>⛽</span><span>ማደያዎች</span>
+      </button>
+      <button onclick="switchTab('quota')" id="nav-quota" class="py-2.5 flex flex-col items-center gap-0.5">
+        <span>🚛</span><span>የነዳጅ ኮታ</span>
+      </button>
+      <button onclick="switchTab('dispense')" id="nav-dispense" class="py-2.5 flex flex-col items-center gap-0.5">
+        <span>🚗</span><span>ስርጭት</span>
+      </button>
+      <button onclick="switchTab('analytics')" id="nav-analytics" class="py-2.5 flex flex-col items-center gap-0.5">
+        <span>📊</span><span>ትንታኔ/ማረጋገጫ</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    const INITIAL_STATIONS = [
+      { id: 1, city: "አሶሳ", name: "አሶሳ ቶታል ማደያ ቁ.1", dieselIn: 30000, dieselOut: 18500, benzineIn: 20000, benzineOut: 14000 },
+      { id: 2, city: "አሶሳ", name: "አሶሳ ኦይል ሊቢያ ቁ.2", dieselIn: 25000, dieselOut: 21500, benzineIn: 15000, benzineOut: 13200 },
+      { id: 3, city: "አሶሳ", name: "አሶሳ ኖክ (NOC) ማደያ ቁ.3", dieselIn: 28000, dieselOut: 15000, benzineIn: 18000, benzineOut: 9500 },
+      { id: 4, city: "አሶሳ", name: "አሶሳ የትብብር ማደያ ቁ.4", dieselIn: 22000, dieselOut: 12000, benzineIn: 14000, benzineOut: 8000 },
+      { id: 5, city: "አሶሳ", name: "አሶሳ መሃል ከተማ ማደያ ቁ.5", dieselIn: 26000, dieselOut: 19000, benzineIn: 16000, benzineOut: 12500 },
+      { id: 6, city: "አሶሳ", name: "አሶሳ ቀበሌ 01 ማደያ ቁ.6", dieselIn: 20000, dieselOut: 11000, benzineIn: 12000, benzineOut: 7000 },
+      { id: 7, city: "አሶሳ", name: "አሶሳ ቀበሌ 04 ማደያ ቁ.7", dieselIn: 24000, dieselOut: 20500, benzineIn: 15000, benzineOut: 11000 },
+      { id: 8, city: "አሶሳ", name: "አሶሳ ዩኒቨርሲቲ በር ማደያ ቁ.8", dieselIn: 25000, dieselOut: 14000, benzineIn: 16000, benzineOut: 9000 },
+      { id: 9, city: "አሶሳ", name: "አሶሳ ኤርፖርት መንገድ ማደያ ቁ.9", dieselIn: 30000, dieselOut: 17500, benzineIn: 18000, benzineOut: 10000 },
+      { id: 10, city: "አሶሳ", name: "አሶሳ ኩርሙክ መውጫ ማደያ ቁ.10", dieselIn: 22000, dieselOut: 16000, benzineIn: 13000, benzineOut: 9500 },
+      { id: 11, city: "አሶሳ", name: "አሶሳ ዳላቲ ፊት ለፊት ማደያ ቁ.11", dieselIn: 20000, dieselOut: 13500, benzineIn: 12000, benzineOut: 8500 },
+      { id: 12, city: "አሶሳ", name: "አሶሳ ኢንዱስትሪ መንደር ማደያ ቁ.12", dieselIn: 27000, dieselOut: 15500, benzineIn: 15000, benzineOut: 8000 },
+      { id: 13, city: "ባምባሲ", name: "ባምባሲ ኖክ (NOC) ማደያ ቁ.1", dieselIn: 20000, dieselOut: 12000, benzineIn: 12000, benzineOut: 7500 },
+      { id: 14, city: "ባምባሲ", name: "ባምባሲ ቶታል ማደያ ቁ.2", dieselIn: 18000, dieselOut: 15200, benzineIn: 10000, benzineOut: 8800 },
+      { id: 15, city: "ባምባሲ", name: "ባምባሲ መሃል ከተማ ማደያ ቁ.3", dieselIn: 16000, dieselOut: 9000, benzineIn: 10000, benzineOut: 5500 },
+      { id: 16, city: "ባምባሲ", name: "ባምባሲ ምዕራብ መውጫ ማደያ ቁ.4", dieselIn: 15000, dieselOut: 8500, benzineIn: 9000, benzineOut: 4500 },
+      { id: 17, city: "ባምባሲ", name: "ባምባሲ ገበያ ዳር ማደያ ቁ.5", dieselIn: 17000, dieselOut: 10500, benzineIn: 11000, benzineOut: 6000 },
+      { id: 18, city: "ግልገል በለስ", name: "ግልገል በለስ ቶታል ማደያ ቁ.1", dieselIn: 24000, dieselOut: 14000, benzineIn: 14000, benzineOut: 8000 },
+      { id: 19, city: "ግልገል በለስ", name: "ግልገል በለስ ኖክ ማደያ ቁ.2", dieselIn: 22000, dieselOut: 18500, benzineIn: 13000, benzineOut: 11200 },
+      { id: 20, city: "ግልገል በለስ", name: "ግልገል በለስ መሃል ከተማ ማደያ ቁ.3", dieselIn: 20000, dieselOut: 11500, benzineIn: 12000, benzineOut: 6500 },
+      { id: 21, city: "ግልገል በለስ", name: "ግልገል በለስ መተከል በር ማደያ ቁ.4", dieselIn: 19000, dieselOut: 10000, benzineIn: 11000, benzineOut: 5500 },
+      { id: 22, city: "ቡለን", name: "ቡለን መሃል ከተማ ማደያ ቁ.1", dieselIn: 16000, dieselOut: 9500, benzineIn: 10000, benzineOut: 6000 },
+      { id: 23, city: "ቡለን", name: "ቡለን ኖክ (NOC) ማደያ ቁ.2", dieselIn: 15000, dieselOut: 12800, benzineIn: 9000, benzineOut: 7800 },
+      { id: 24, city: "ፓዊ", name: "ፓዊ ከተማ ቶታል ማደያ ቁ.1", dieselIn: 22000, dieselOut: 13000, benzineIn: 14000, benzineOut: 8200 },
+      { id: 25, city: "ፓዊ", name: "ፓዊ አልሙ ሜዳ ማደያ ቁ.2", dieselIn: 18000, dieselOut: 10500, benzineIn: 11000, benzineOut: 6000 },
+      { id: 26, city: "ማንቡክ", name: "ማንቡክ መሃል ከተማ ማደያ ቁ.1", dieselIn: 16000, dieselOut: 9000, benzineIn: 10000, benzineOut: 5200 },
+      { id: 27, city: "ማንቡክ", name: "ማንቡክ ጉባ መንገድ ማደያ ቁ.2", dieselIn: 18000, dieselOut: 15400, benzineIn: 10000, benzineOut: 8500 }
+    ];
+
+    // Default Accounts: Super Admin, Admin, Supervisor
+    const INITIAL_USERS = [
+      { username: "superadmin", pass: "super123", name: "ዋና ሱፐር አድሚን (Super Admin)", role: "superadmin", status: "approved" },
+      { username: "admin", pass: "admin123", name: "አስተዳዳሪ (Admin)", role: "admin", status: "approved" },
+      { username: "supervisor", pass: "sup123", name: "አቶ ዳዊት መኮንን", role: "supervisor", status: "approved" }
+    ];
+
+    let stations = JSON.parse(localStorage.getItem('bg_stations_v4')) || INITIAL_STATIONS;
+    let logs = JSON.parse(localStorage.getItem('bg_logs_v4')) || [];
+    let savedUsers = JSON.parse(localStorage.getItem('bg_users_v4'));
+    let users = (Array.isArray(savedUsers) && savedUsers.length > 0) ? savedUsers : INITIAL_USERS;
+    let currentUser = JSON.parse(localStorage.getItem('bg_current_user_v4')) || null;
+    let offlineQueue = JSON.parse(localStorage.getItem('bg_offline_queue_v4')) || [];
+
+    function saveData() {
+      localStorage.setItem('bg_stations_v4', JSON.stringify(stations));
+      localStorage.setItem('bg_logs_v4', JSON.stringify(logs));
+      localStorage.setItem('bg_users_v4', JSON.stringify(users));
+      localStorage.setItem('bg_current_user_v4', JSON.stringify(currentUser));
+      localStorage.setItem('bg_offline_queue_v4', JSON.stringify(offlineQueue));
+      updateSyncUI();
+    }
+
+    // =========================================================================
+    // OFFLINE & NETWORK SYNC ENGINE
+    // =========================================================================
+    function updateNetworkStatus() {
+      const online = navigator.onLine;
+      const dot = document.getElementById('netDot');
+      const txt = document.getElementById('netStatusText');
+      if (!dot || !txt) return;
+
+      if (online) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        txt.textContent = 'ኦንላይን (Online)';
+        txt.className = 'font-bold text-emerald-100';
+        // Automatically sync any pending offline records when network returns
+        if (offlineQueue.length > 0) {
+          syncOfflineRecords(false);
+        }
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        txt.textContent = 'ኦፍላይን (Offline Mode - በስልክ ላይ ይቀመጣል)';
+        txt.className = 'font-bold text-amber-300';
+      }
+    }
+
+    function updateSyncUI() {
+      const badge = document.getElementById('pendingSyncBadge');
+      if (badge) {
+        badge.textContent = `ያልተላኩ (Sync): ${offlineQueue.length}`;
+      }
+    }
+
+    function syncOfflineRecords(manual = false) {
+      if (!navigator.onLine) {
+        if (manual) showToast("⚠️ ኢንተርኔት (Network) የለም! ኔትዎርክ ሲያገኙ ወዲያውኑ Sync ይሆናል።");
+        return;
+      }
+      if (offlineQueue.length === 0) {
+        if (manual) showToast("✅ ሁሉም መረጃዎች ቀድመው Sync ሆነዋል!");
+        return;
+      }
+
+      const count = offlineQueue.length;
+      // Mark all queued logs as synced
+      logs.forEach(l => {
+        if (l.syncStatus === 'offline') {
+          l.syncStatus = 'synced';
+        }
+      });
+      offlineQueue = [];
+      saveData();
+      renderLogs();
+      showToast(`✅ ${count} ከመስመር ውጭ (Offline) የተመዘገቡ መረጃዎች በተሳካ ሁኔታ Sync ሆነዋል!`);
+    }
+
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+
+    // =========================================================================
+    // AUTHENTICATION & STRICT APPROVAL WORKFLOW
+    // =========================================================================
+    function showAuthToast(msg, isErr = true) {
+      const t = document.getElementById('authToast');
+      t.textContent = msg;
+      t.className = `mb-4 p-3 rounded-xl text-xs font-semibold text-center leading-relaxed ${isErr ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}`;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 5000);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    function switchAuthMode(mode) {
+      if (mode === 'signup') {
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('signupForm').classList.remove('hidden');
+        document.getElementById('authTitle').textContent = 'አካውንት መፍጠሪያ (Sign Up)';
+        document.getElementById('authSubtitle').textContent = 'አዲስ ተቆጣጣሪ ወይም አድሚን ይመዝገቡ';
+      } else {
+        document.getElementById('signupForm').classList.add('hidden');
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('authTitle').textContent = 'ግባ (Login)';
+        document.getElementById('authSubtitle').textContent = 'ቤኒሻንጉል ጉሙዝ ንግድና ገበያ ልማት ቢሮ';
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUser').value.trim().toLowerCase();
+      const p = document.getElementById('loginPass').value.trim();
+
+      const found = users.find(x => x.username.toLowerCase() === u && x.pass === p);
+      if (!found) {
+        showAuthToast("የተሳሳተ ዩዘርናም ወይም የሚስጥር ቁጥር!");
+        return;
+      }
+
+      // Block entry if pending approval
+      if (found.status !== 'approved') {
+        if (found.role === 'admin') {
+          showAuthToast("⏳ የአድሚን አካውንትዎ ገና በሱፐር አድሚን (Super Admin) አልጸደቀም! እባክዎ ሲጸድቅ ይሞክሩ።");
+        } else {
+          showAuthToast("⏳ የተቆጣጣሪ (Supervisor) አካውንትዎ ገና በአድሚን አልጸደቀም! እባክዎ አድሚኖቹ እስኪያረጋግጡልዎት ይጠብቁ።");
+        }
+        return;
+      }
+
+      currentUser = found;
+      saveData();
+      bootApp();
+    }
+
+    // =========================================================================
+    // REGISTRATION REQUEST CODE & CLOUD SYNC HELPERS
+    // =========================================================================
+    const DEFAULT_CLOUD_DB_URL = ""; // Optional: paste your Firebase Realtime DB URL here so all phones auto-sync!
+
+    function getCloudDbUrl() {
+      return (localStorage.getItem('bg_cloud_db_url_v5') || DEFAULT_CLOUD_DB_URL || '').trim().replace(/\/$/, '');
+    }
+
+    function encodeToken(prefix, obj) {
+      const jsonStr = JSON.stringify(obj);
+      const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      return `${prefix}-${b64}`;
+    }
+
+    function decodeToken(prefix, tokenStr) {
+      const clean = (tokenStr || '').trim();
+      if (!clean.startsWith(prefix + '-')) return null;
+      const b64 = clean.slice(prefix.length + 1);
+      const jsonStr = decodeURIComponent(escape(atob(b64)));
+      return JSON.parse(jsonStr);
+    }
+
+    function copyRegRequestCode() {
+      const el = document.getElementById('generatedReqCode');
+      el.select();
+      el.setSelectionRange(0, 99999);
+      navigator.clipboard?.writeText(el.value).catch(() => document.execCommand('copy'));
+      showAuthToast("✅ የምዝገባ ኮዱ ተቀድቷል (Copied)! አሁን ለሱፐር አድሚኑ ይላኩለት።", false);
+    }
+
+    function shareRegRequestCode() {
+      const code = document.getElementById('generatedReqCode').value;
+      const msg = `ሰላም ሱፐር አድሚን፣ የቤኒሻንጉል ጉሙዝ የነዳጅ ኮታ መከታተያ አካውንቴን እንዲያጸድቁልኝ እጠይቃለሁ።\n\nየምዝገባ ኮድ (Request Code):\n${code}`;
+      if (navigator.share) {
+        navigator.share({ title: 'የምዝገባ ማረጋገጫ ጥያቄ', text: msg }).catch(() => {});
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      }
+    }
+
+    function toggleEmployeeApproveBox() {
+      document.getElementById('employeeApproveBox').classList.toggle('hidden');
+    }
+
+    function applyEmployeeApprovalCode() {
+      const raw = document.getElementById('employeeApprovalInput').value.trim();
+      try {
+        const data = decodeToken('BGRS-APP', raw);
+        if (!data || !data.username) {
+          showAuthToast("⚠️ ትክክለኛ የማረጋገጫ ኮድ (BGRS-APP-...) አይደለም!");
+          return;
+        }
+        const existing = users.find(u => u.username.toLowerCase() === data.username.toLowerCase());
+        if (existing) {
+          existing.status = 'approved';
+          existing.role = data.role || existing.role;
+          existing.name = data.name || existing.name;
+        } else {
+          users.push({
+            username: data.username,
+            pass: data.pass || '1234',
+            name: data.name || data.username,
+            role: data.role || 'supervisor',
+            status: 'approved'
+          });
+        }
+        saveData();
+        document.getElementById('employeeApprovalInput').value = '';
+        document.getElementById('employeeApproveBox').classList.add('hidden');
+        document.getElementById('loginUser').value = data.username;
+        showAuthToast(`✅ አካውንትዎ (${data.username}) ጸድቋል! አሁን የሚስጥር ቁጥርዎን አስገብተው ይግቡ።`, false);
+      } catch (err) {
+        showAuthToast("⚠️ ኮዱ ተበላሽቷል ወይም ትክክል አይደለም። እባክዎ ሙሉውን ኮድ ኮፒ ያድርጉ።");
+      }
+    }
+
+    function importAndApproveRequestCode() {
+      const raw = document.getElementById('adminImportReqInput').value.trim();
+      try {
+        const req = decodeToken('BGRS-REQ', raw);
+        if (!req || !req.username || !req.pass) {
+          showToast("⚠️ ትክክለኛ የሰራተኛ ምዝገባ ኮድ (BGRS-REQ-...) አይደለም!");
+          return;
+        }
+        if (currentUser.role === 'admin' && req.role !== 'supervisor') {
+          showToast("⚠️ አድሚኖችን ማጽደቅ የሚችለው ሱፐር አድሚን (Super Admin) ብቻ ነው!");
+          return;
+        }
+
+        let target = users.find(u => u.username.toLowerCase() === req.username.toLowerCase());
+        if (target) {
+          target.name = req.name;
+          target.pass = req.pass;
+          target.role = req.role;
+          target.status = 'approved';
+        } else {
+          target = {
+            username: req.username,
+            pass: req.pass,
+            name: req.name,
+            role: req.role,
+            status: 'approved'
+          };
+          users.push(target);
+        }
+
+        saveData();
+        pushUserToCloud(target);
+        renderStaff();
+        document.getElementById('adminImportReqInput').value = '';
+        showApprovalCodeForUser(target.username);
+        showToast(`✅ ${target.name} ተመዝግቦ ጸድቋል! የማረጋገጫ ኮዱን መልሰው ይላኩለት።`);
+      } catch (err) {
+        showToast("⚠️ ኮዱ ትክክል አይደለም! ሰራተኛው የላከውን ሙሉ ኮድ ያስገቡ።");
+      }
+    }
+
+    function showApprovalCodeForUser(username) {
+      const target = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!target) return;
+      const appCode = encodeToken('BGRS-APP', {
+        username: target.username,
+        pass: target.pass,
+        name: target.name,
+        role: target.role,
+        status: 'approved'
+      });
+      document.getElementById('adminGeneratedApprovalCode').value = appCode;
+      document.getElementById('adminGeneratedApprovalBox').classList.remove('hidden');
+    }
+
+    function copyAdminApprovalCode() {
+      const el = document.getElementById('adminGeneratedApprovalCode');
+      el.select();
+      el.setSelectionRange(0, 99999);
+      navigator.clipboard?.writeText(el.value).catch(() => document.execCommand('copy'));
+      showToast("📋 የማረጋገጫ ኮዱ ተቀድቷል! ለሰራተኛው ይላኩለት።");
+    }
+
+    function saveCloudSyncUrl() {
+      const url = document.getElementById('firebaseUrlInput').value.trim().replace(/\/$/, '');
+      localStorage.setItem('bg_cloud_db_url_v5', url);
+      updateCloudBadge();
+      if (url) {
+        users.forEach(u => pushUserToCloud(u));
+        pullUsersFromCloud(true);
+        showToast("✅ የ Cloud Sync አድራሻ ተቀምጧል!");
+      } else {
+        showToast("ℹ️ Local Mode ተመርጧል።");
+      }
+    }
+
+    function updateCloudBadge() {
+      const badge = document.getElementById('cloudSyncBadge');
+      const inp = document.getElementById('firebaseUrlInput');
+      const url = getCloudDbUrl();
+      if (inp && url) inp.value = url;
+      if (badge) {
+        badge.textContent = url ? 'Cloud Active' : 'Local';
+        badge.className = url
+          ? 'text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold'
+          : 'text-[9px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600';
+      }
+    }
+
+    async function pushUserToCloud(userObj) {
+      const baseUrl = getCloudDbUrl();
+      if (!baseUrl || !navigator.onLine) return;
+      try {
+        const safeKey = userObj.username.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+        await fetch(`${baseUrl}/bgrs_users/${safeKey}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userObj)
+        });
+      } catch (e) {
+        console.warn('Cloud push skipped:', e);
+      }
+    }
+
+    async function pullUsersFromCloud(showNotification = false) {
+      const baseUrl = getCloudDbUrl();
+      if (!baseUrl || !navigator.onLine) {
+        if (showNotification) showToast("⚠️ የ Cloud URL አልተሞላም ወይም ኢንተርኔት የለም።");
+        return;
+      }
+      try {
+        const res = await fetch(`${baseUrl}/bgrs_users.json`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && typeof data === 'object') {
+          let changed = false;
+          Object.values(data).forEach(remoteUser => {
+            if (!remoteUser || !remoteUser.username) return;
+            const localIdx = users.findIndex(u => u.username.toLowerCase() === remoteUser.username.toLowerCase());
+            if (localIdx === -1) {
+              users.push(remoteUser);
+              changed = true;
+            } else if (users[localIdx].status !== remoteUser.status || users[localIdx].role !== remoteUser.role) {
+              users[localIdx] = { ...users[localIdx], ...remoteUser };
+              changed = true;
+            }
+          });
+          if (changed) {
+            saveData();
+            if (currentUser) renderStaff();
+          }
+          if (showNotification) showToast("✅ ከ Cloud አዲስ መረጃዎች ተመሳስለዋል!");
+        }
+      } catch (e) {
+        if (showNotification) showToast("⚠️ ከ Cloud ማምጣት አልተቻለም።");
+      }
+    }
+
+    function handleSignup(e) {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const u = document.getElementById('signupUser').value.trim();
+      const p = document.getElementById('signupPass').value.trim();
+      const role = document.getElementById('signupRole').value;
+
+      if (users.some(x => x.username.toLowerCase() === u.toLowerCase())) {
+        showAuthToast("ይህ ዩዘርናም ቀደም ሲል ተይዟል!");
+        return;
+      }
+
+      // All new registrations start as 'pending' — cannot enter the app until approved!
+      const newUser = { username: u, pass: p, name: name, role: role, status: 'pending' };
+      users.push(newUser);
+      saveData();
+      pushUserToCloud(newUser);
+
+      // Generate shareable Registration Request Code so Super Admin on another phone can receive & approve it!
+      const reqCode = encodeToken('BGRS-REQ', newUser);
+      document.getElementById('generatedReqCode').value = reqCode;
+      document.getElementById('regRequestCodeBox').classList.remove('hidden');
+
+      document.getElementById('signupForm').reset();
+      switchAuthMode('login');
+
+      if (role === 'admin') {
+        showAuthToast("✅ ምዝገባዎ ተጠናቋል! ከታች ያለውን የምዝገባ ኮድ (Request Code) ኮፒ አድርገው ለሱፐር አድሚን ይላኩለት።", false);
+      } else {
+        showAuthToast("✅ ምዝገባዎ ተጠናቋል! ከታች ያለውን የምዝገባ ኮድ (Request Code) ኮፒ አድርገው ለአድሚኑ ይላኩለት።", false);
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      saveData();
+      document.getElementById('appContainer').classList.add('hidden');
+      document.getElementById('authContainer').classList.remove('hidden');
+    }
+
+    function bootApp() {
+      // Safety check: ensure user is approved
+      const latestUser = users.find(u => u.username === currentUser.username);
+      if (!latestUser || latestUser.status !== 'approved') {
+        logout();
+        return;
+      }
+      currentUser = latestUser;
+
+      document.getElementById('authContainer').classList.add('hidden');
+      document.getElementById('appContainer').classList.remove('hidden');
+
+      configureRoleAccess();
+      updateNetworkStatus();
+      updateSyncUI();
+      updateHeaderStats();
+      initCityDropdowns();
+      onFilterCityChange();
+      renderStations();
+      renderLogs();
+      updateCloudBadge();
+      pullUsersFromCloud(false).then(() => renderStaff());
+      renderStaff();
+    }
+
+    // =========================================================================
+    // ROLE-BASED ACCESS CONTROL (Super Admin vs Admin vs Supervisor)
+    // =========================================================================
+    function configureRoleAccess() {
+      const bottomNav = document.getElementById('bottomNav');
+      const navAnalytics = document.getElementById('nav-analytics');
+      const resetBox = document.getElementById('superAdminResetBox');
+      const approvalTitle = document.getElementById('approvalPanelTitle');
+      const approvalDesc = document.getElementById('approvalPanelDesc');
+
+      if (currentUser.role === 'supervisor') {
+        // Supervisors ONLY see: ማደያዎች, የነዳጅ ኮታ, ስርጭት (3 tabs only!)
+        navAnalytics.classList.add('hidden');
+        bottomNav.classList.remove('grid-cols-4');
+        bottomNav.classList.add('grid-cols-3');
+        switchTab('stations');
+      } else {
+        // Super Admin and Admin see all 4 tabs
+        navAnalytics.classList.remove('hidden');
+        bottomNav.classList.remove('grid-cols-3');
+        bottomNav.classList.add('grid-cols-4');
+
+        if (currentUser.role === 'superadmin') {
+          resetBox.classList.remove('hidden');
+          approvalTitle.textContent = '🛡️ የሱፐር አድሚን (Super Admin) ማረጋገጫ ማዕከል';
+          approvalDesc.textContent = 'አድሚኖችን (Admins) እና ተቆጣጣሪዎችን (Supervisors) የማጽደቅ እና ስርዓቱን ዳግም የማስጀመር ሙሉ መብት አለዎት።';
+        } else {
+          // Regular Admin: Can ONLY approve Supervisors; CANNOT reset system data
+          resetBox.classList.add('hidden');
+          approvalTitle.textContent = '✅ የአድሚን የተቆጣጣሪዎች ማረጋገጫ (Supervisor Approval)';
+          approvalDesc.textContent = 'አዲስ የተመዘገቡ ተቆጣጣሪዎችን (Supervisors) የማረጋገጥ መብት አለዎት።';
+        }
+      }
+    }
+
+    function switchTab(tabName) {
+      // Prevent supervisor from accessing analytics/admin tab
+      if (currentUser && currentUser.role === 'supervisor' && tabName === 'analytics') {
+        return;
+      }
+      ['stations', 'quota', 'dispense', 'analytics'].forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+        document.getElementById('nav-' + t).classList.remove('tab-active');
+      });
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+      document.getElementById('nav-' + tabName).classList.add('tab-active');
+      if (tabName === 'analytics') renderAnalytics();
+      if (tabName === 'dispense') renderLogs();
+    }
+
+    function updateHeaderStats() {
+      let totalIn = 0, totalOut = 0;
+      stations.forEach(s => {
+        totalIn += (s.dieselIn + s.benzineIn);
+        totalOut += (s.dieselOut + s.benzineOut);
+      });
+      document.getElementById('statTotalIn').textContent = totalIn.toLocaleString();
+      document.getElementById('statTotalOut').textContent = totalOut.toLocaleString();
+      document.getElementById('statRemaining').textContent = (totalIn - totalOut).toLocaleString();
+    }
+
+    function renderStations() {
+      const filter = document.getElementById('cityFilter').value;
+      const container = document.getElementById('stationsList');
+      const filtered = filter === 'ALL' ? stations : stations.filter(s => s.city === filter);
+
+      container.innerHTML = filtered.map(s => {
+        const dRem = s.dieselIn - s.dieselOut;
+        const bRem = s.benzineIn - s.benzineOut;
+        const dPct = s.dieselIn ? Math.round((dRem / s.dieselIn) * 100) : 0;
+        const bPct = s.benzineIn ? Math.round((bRem / s.benzineIn) * 100) : 0;
+        const lowAlert = dPct < 20 || bPct < 20;
+
+        return `
+          <div class="bg-white p-3.5 rounded-2xl shadow-sm border ${lowAlert ? 'border-red-300' : 'border-slate-200'}">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-[#0f5132]">${s.city}</span>
+                <h3 class="text-xs font-bold text-slate-800 mt-1">${s.name}</h3>
+              </div>
+              ${lowAlert ? '<span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full">⚠️ እጥረት</span>' : '<span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">መደበኛ</span>'}
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px]">
+              <div class="bg-slate-50 p-2 rounded-xl">
+                <div class="flex justify-between text-slate-600"><span>ናፍጣ ቀሪ:</span><span class="font-bold text-slate-900">${dRem.toLocaleString()} ሊ</span></div>
+                <div class="w-full bg-slate-200 h-1.5 rounded-full mt-1 overflow-hidden">
+                  <div class="${dPct < 20 ? 'bg-red-500' : 'bg-[#0f5132]'} h-full" style="width:${dPct}%"></div>
+                </div>
+              </div>
+              <div class="bg-slate-50 p-2 rounded-xl">
+                <div class="flex justify-between text-slate-600"><span>ቤንዚን ቀሪ:</span><span class="font-bold text-slate-900">${bRem.toLocaleString()} ሊ</span></div>
+                <div class="w-full bg-slate-200 h-1.5 rounded-full mt-1 overflow-hidden">
+                  <div class="${bPct < 20 ? 'bg-red-500' : 'bg-amber-500'} h-full" style="width:${bPct}%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function initCityDropdowns() {
+      const cities = ["አሶሳ", "ባምባሲ", "ግልገል በለስ", "ቡለን", "ፓዊ", "ማንቡክ"];
+      ['quotaCity', 'dispCity'].forEach(id => {
+        document.getElementById(id).innerHTML = cities.map(c => `<option value="${c}">${c}</option>`).join('');
+      });
+      populateStationDropdown('quotaCity', 'quotaStation');
+      populateStationDropdown('dispCity', 'dispStation');
+    }
+
+    function populateStationDropdown(citySelectId, stationSelectId) {
+      const city = document.getElementById(citySelectId).value;
+      const list = stations.filter(s => s.city === city);
+      document.getElementById(stationSelectId).innerHTML = list.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    }
+
+    // Cascading Filter: City -> Stations in that City -> Render Logs
+    function onFilterCityChange() {
+      const selectedCity = document.getElementById('filterCity').value;
+      const stationSelect = document.getElementById('filterStation');
+      const matchingStations = selectedCity === 'ALL'
+        ? stations
+        : stations.filter(s => s.city === selectedCity);
+
+      stationSelect.innerHTML = '<option value="ALL">ሁሉም ማደያዎች (' + matchingStations.length + ')</option>' +
+        matchingStations.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+
+      renderLogs();
+    }
+
+    function clearLogFilters() {
+      document.getElementById('filterCity').value = 'ALL';
+      document.getElementById('filterFromDate').value = '';
+      document.getElementById('filterFromTime').value = '';
+      document.getElementById('filterToDate').value = '';
+      document.getElementById('filterToTime').value = '';
+      onFilterCityChange();
+    }
+
+    function addQuota() {
+      const stId = Number(document.getElementById('quotaStation').value);
+      const type = document.getElementById('quotaFuelType').value;
+      const liters = Number(document.getElementById('quotaLiters').value);
+      const truck = document.getElementById('quotaTruck').value.trim();
+      const inspector = document.getElementById('quotaInspector').value.trim();
+
+      if (!liters || liters <= 0 || !inspector) {
+        showToast("እባክዎ መጠን (ሊትር) እና የተቆጣጣሪ ስም ያስገቡ!");
+        return;
+      }
+
+      const st = stations.find(s => s.id === stId);
+      if (type === 'diesel') st.dieselIn += liters;
+      else st.benzineIn += liters;
+
+      const now = new Date();
+      const isOffline = !navigator.onLine;
+      const logEntry = {
+        id: 'log-' + Date.now(),
+        timestamp: now.toISOString(),
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().slice(0, 5),
+        action: "ኮታ ገቢ",
+        city: st.city,
+        station: st.name,
+        buyer: "-",
+        detail: `${type === 'diesel' ? 'ናፍጣ' : 'ቤንዚን'} +${liters.toLocaleString()} ሊ (ታርጋ: ${truck || '-'})`,
+        liters: liters,
+        person: inspector,
+        syncStatus: isOffline ? 'offline' : 'synced'
+      };
+
+      logs.unshift(logEntry);
+      if (isOffline) {
+        offlineQueue.push(logEntry);
+      }
+
+      document.getElementById('quotaLiters').value = '';
+      saveData();
+      updateHeaderStats();
+      renderStations();
+      renderLogs();
+      showToast(isOffline
+        ? "📴 ኦፍላይን (Offline) ተመዝግቧል! ኔትዎርክ ሲያገኙ ወዲያውኑ Sync ይሆናል።"
+        : "✅ የነዳጅ ኮታ በትክክል ተመዝግቧል!");
+    }
+
+    function recordDispense() {
+      const stId = Number(document.getElementById('dispStation').value);
+      const buyer = document.getElementById('dispBuyer').value.trim();
+      const vType = document.getElementById('dispVehicleType').value;
+      const plate = document.getElementById('dispPlate').value.trim();
+      const fType = document.getElementById('dispFuelType').value;
+      const liters = Number(document.getElementById('dispLiters').value);
+      const attendant = document.getElementById('dispAttendant').value.trim();
+      const attId = document.getElementById('dispAttendantId').value.trim();
+
+      if (!liters || liters <= 0 || !plate || !attendant || !buyer) {
+        showToast("እባክዎ የገዢውን ስም፣ ታርጋ፣ ሊትር እና ባለሙያ ይሙሉ!");
+        return;
+      }
+
+      const st = stations.find(s => s.id === stId);
+      const rem = fType === 'diesel' ? (st.dieselIn - st.dieselOut) : (st.benzineIn - st.benzineOut);
+      if (liters > rem) {
+        showToast(`⚠️ በማደያው ያለው ቀሪ ${rem} ሊትር ብቻ ነው!`);
+        return;
+      }
+
+      if (fType === 'diesel') st.dieselOut += liters;
+      else st.benzineOut += liters;
+
+      const now = new Date();
+      const isOffline = !navigator.onLine;
+      const logEntry = {
+        id: 'log-' + Date.now(),
+        timestamp: now.toISOString(),
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().slice(0, 5),
+        action: "ስርጭት",
+        city: st.city,
+        station: st.name,
+        buyer: buyer,
+        detail: `${vType} (${plate}) - ${liters} ሊ ${fType === 'diesel' ? 'ናፍጣ' : 'ቤንዚን'}`,
+        liters: liters,
+        person: `${attendant} (${attId || 'ID'})`,
+        syncStatus: isOffline ? 'offline' : 'synced'
+      };
+
+      logs.unshift(logEntry);
+      if (isOffline) {
+        offlineQueue.push(logEntry);
+      }
+
+      document.getElementById('dispBuyer').value = '';
+      document.getElementById('dispPlate').value = '';
+      document.getElementById('dispLiters').value = '';
+      saveData();
+      updateHeaderStats();
+      renderStations();
+      renderLogs();
+      showToast(isOffline
+        ? "📴 ስርጭቱ በስልክዎ (Offline) ተቀምጧል! ኔትዎርክ ሲመጣ Sync ይሆናል።"
+        : "✅ ስርጭቱ ተመዝግቦ ክምችቱ ዘምኗል!");
+    }
+
+    function renderLogs() {
+      const cityFilter = document.getElementById('filterCity').value;
+      const stationFilter = document.getElementById('filterStation').value;
+      const fromDate = document.getElementById('filterFromDate').value;
+      const fromTime = document.getElementById('filterFromTime').value;
+      const toDate = document.getElementById('filterToDate').value;
+      const toTime = document.getElementById('filterToTime').value;
+      const el = document.getElementById('recentLogs');
+
+      let filtered = logs.filter(l => l.action === "ስርጭት");
+
+      if (cityFilter !== 'ALL') {
+        filtered = filtered.filter(l => l.city === cityFilter);
+      }
+      if (stationFilter !== 'ALL') {
+        filtered = filtered.filter(l => l.station === stationFilter);
+      }
+      if (fromDate) {
+        const startStr = `${fromDate}T${fromTime || '00:00'}:00`;
+        const startMs = new Date(startStr).getTime();
+        filtered = filtered.filter(l => {
+          const itemMs = l.timestamp ? new Date(l.timestamp).getTime() : new Date(`${l.date}T${l.time || '00:00'}:00`).getTime();
+          return itemMs >= startMs;
+        });
+      }
+      if (toDate) {
+        const endStr = `${toDate}T${toTime || '23:59'}:59`;
+        const endMs = new Date(endStr).getTime();
+        filtered = filtered.filter(l => {
+          const itemMs = l.timestamp ? new Date(l.timestamp).getTime() : new Date(`${l.date}T${l.time || '23:59'}:59`).getTime();
+          return itemMs <= endMs;
+        });
+      }
+
+      const totalFilteredLiters = filtered.reduce((acc, curr) => acc + (curr.liters || 0), 0);
+      document.getElementById('filteredTotalLiters').textContent = `ድምር: ${totalFilteredLiters.toLocaleString()} ሊትር`;
+
+      if (!filtered.length) {
+        el.innerHTML = '<p class="text-slate-400 text-center py-3">በተመረጠው ማጣሪያ የተገኘ መዝገብ የለም</p>';
+        return;
+      }
+
+      el.innerHTML = filtered.map(l => `
+        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+          <div>
+            <div class="flex flex-wrap items-center gap-1">
+              <span class="text-[10px] font-bold bg-emerald-100 text-[#0f5132] px-1.5 py-0.5 rounded">${l.city || ''}</span>
+              <span class="font-bold text-amber-700">[${l.station}]</span>
+              <span class="text-[10px] bg-slate-200 px-1.5 py-0.5 rounded font-semibold text-slate-700">ገዢ: ${l.buyer}</span>
+              ${l.syncStatus === 'offline' ? '<span class="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold">⏳ Offline</span>' : ''}
+            </div>
+            <div class="text-[11px] text-slate-700 mt-0.5">${l.detail}</div>
+            <div class="text-[10px] text-slate-500">ባለሙያ: ${l.person} | ቀን: ${l.date}</div>
+          </div>
+          <div class="text-right shrink-0 ml-2">
+            <span class="text-[11px] font-extrabold text-[#0f5132]">${l.liters} ሊ</span>
+            <div class="text-[9px] text-slate-400">${l.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAnalytics() {
+      const low = stations.filter(s => (s.dieselIn && ((s.dieselIn - s.dieselOut) / s.dieselIn) < 0.2) || (s.benzineIn && ((s.benzineIn - s.benzineOut) / s.benzineIn) < 0.2));
+      document.getElementById('lowStockList').innerHTML = low.length
+        ? low.map(s => `<div>• <b>${s.name}</b> (${s.city}) - አስቸኳይ ኮታ ያስፈልገዋል</div>`).join('')
+        : '<div>ሁሉም ማደያዎች በቂ ክምችት አላቸው።</div>';
+
+      const cities = ["አሶሳ", "ባምባሲ", "ግልገል በለስ", "ቡለን", "ፓዊ", "ማንቡክ"];
+      document.getElementById('cityAnalytics').innerHTML = cities.map(c => {
+        const list = stations.filter(s => s.city === c);
+        const totalIn = list.reduce((a, b) => a + b.dieselIn + b.benzineIn, 0);
+        const totalOut = list.reduce((a, b) => a + b.dieselOut + b.benzineOut, 0);
+        const pct = totalIn ? Math.round((totalOut / totalIn) * 100) : 0;
+        return `
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <span>${c} (${list.length} ማደያዎች)</span>
+              <span>${totalOut.toLocaleString()} / ${totalIn.toLocaleString()} ሊ (${pct}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+              <div class="bg-[#0f5132] h-full" style="width:${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      renderStaff();
+    }
+
+    function getRoleLabel(role) {
+      if (role === 'superadmin') return 'ሱፐር አድሚን (Super Admin)';
+      if (role === 'admin') return 'አድሚን (Admin)';
+      return 'ተቆጣጣሪ (Supervisor)';
+    }
+
+    function renderStaff() {
+      if (!currentUser || currentUser.role === 'supervisor') return;
+
+      const pendingContainer = document.getElementById('pendingApprovalsList');
+      const approvedContainer = document.getElementById('approvedUsersList');
+
+      // Filter pending requests based on role permissions:
+      // Super Admin sees pending Admins + Supervisors; Regular Admin sees ONLY pending Supervisors
+      const pendingUsers = users.filter(u => {
+        if (u.status !== 'pending') return false;
+        if (currentUser.role === 'superadmin') return true;
+        if (currentUser.role === 'admin') return u.role === 'supervisor';
+        return false;
+      });
+
+      if (pendingUsers.length === 0) {
+        pendingContainer.innerHTML = '<p class="text-[11px] text-slate-400 italic py-1">ማረጋገጫ የሚጠብቅ አዲስ ተመዝጋቢ የለም።</p>';
+      } else {
+        pendingContainer.innerHTML = pendingUsers.map(u => `
+          <div class="flex items-center justify-between p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-xs">
+            <div>
+              <div class="font-bold text-slate-900">${u.name} <span class="text-[10px] text-slate-500">(${u.username})</span></div>
+              <div class="text-[10px] font-bold text-amber-800">${getRoleLabel(u.role)}</div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="approveUser('${u.username}')" class="px-2.5 py-1.5 bg-[#0f5132] hover:bg-emerald-800 text-white font-bold text-[10px] rounded-lg shadow">
+                አጽድቅ (Approve)
+              </button>
+              <button onclick="rejectUser('${u.username}')" class="px-2 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-[10px] rounded-lg">
+                ሰርዝ
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const approvedUsers = users.filter(u => u.status === 'approved');
+      approvedContainer.innerHTML = approvedUsers.map(u => {
+        // Super admin can remove admins & supervisors; regular admin can only remove supervisors
+        const canRemove = u.username !== currentUser.username && (
+          (currentUser.role === 'superadmin' && u.role !== 'superadmin') ||
+          (currentUser.role === 'admin' && u.role === 'supervisor')
+        );
+
+        return `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+            <div>
+              <div class="font-bold text-slate-800">${u.name} <span class="text-[10px] text-slate-500">(${u.username})</span></div>
+              <div class="text-[10px] text-emerald-700 font-semibold">${getRoleLabel(u.role)}</div>
+            </div>
+            <div class="flex items-center gap-1">
+              ${canRemove
+                ? `<button onclick="rejectUser('${u.username}')" class="px-2 py-1 bg-red-100 text-red-700 font-bold text-[10px] rounded-lg">አስወግድ</button>`
+                : `<button onclick="showApprovalCodeForUser('${u.username}')" class="px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-[10px] rounded-lg" title="የማረጋገጫ ኮድ ኮፒ አድርግ">🔑 ኮድ</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function approveUser(username) {
+      const target = users.find(u => u.username === username);
+      if (!target) return;
+
+      // Enforce permission rule
+      if (currentUser.role === 'admin' && target.role !== 'supervisor') {
+        showToast("⚠️ አድሚኖችን ማጽደቅ የሚችለው ሱፐር አድሚን (Super Admin) ብቻ ነው!");
+        return;
+      }
+
+      target.status = 'approved';
+      saveData();
+      pushUserToCloud(target);
+      renderStaff();
+      showApprovalCodeForUser(target.username);
+      showToast(`✅ ${target.name} (${getRoleLabel(target.role)}) ጸድቋል! የማረጋገጫ ኮዱን መልሰው ይላኩለት።`);
+    }
+
+    function rejectUser(username) {
+      const target = users.find(u => u.username === username);
+      if (!target) return;
+      if (currentUser.role === 'admin' && target.role !== 'supervisor') {
+        showToast("⚠️ ይህን ተጠቃሚ የማስወገድ መብት የለዎትም!");
+        return;
+      }
+      if (confirm(`"${target.name}" ከስርዓቱ እንዲወገድ ይፈልጋሉ?`)) {
+        users = users.filter(u => u.username !== username);
+        saveData();
+        renderStaff();
+        showToast("🗑️ ተጠቃሚው ተወግዷል!");
+      }
+    }
+
+    function resetAllData() {
+      // Strictly restricted to Super Admin
+      if (!currentUser || currentUser.role !== 'superadmin') {
+        showToast("⚠️ ዳግም ማስጀመር (Reset) የሚችለው ሱፐር አድሚን (Super Admin) ብቻ ነው!");
+        return;
+      }
+
+      if(confirm("⚠️ ማስጠንቀቂያ፡ የሁሉንም ማደያዎች የነዳጅ ክምችት እና ሪፖርቶች ወደ ዜሮ (0) መመለስ ይፈልጋሉ?")) {
+        stations.forEach(s => {
+          s.dieselIn = 0; s.dieselOut = 0; s.benzineIn = 0; s.benzineOut = 0;
+        });
+        logs = [];
+        offlineQueue = [];
+        saveData();
+        updateHeaderStats();
+        renderStations();
+        renderLogs();
+        showToast("🔄 የነዳጅ መረጃዎች በሙሉ በሱፐር አድሚን ዳግም ተጀምረዋል (Reset)!");
+      }
+    }
+
+    function exportCSV() {
+      let csv = "ከተማ,ማደያ,ናፍጣ የገባ,ናፍጣ የተሰራጨ,ናፍጣ ቀሪ,ቤንዚን የገባ,ቤንዚን የተሰራጨ,ቤንዚን ቀሪ\n";
+      stations.forEach(s => {
+        csv += `"${s.city}","${s.name}",${s.dieselIn},${s.dieselOut},${s.dieselIn - s.dieselOut},${s.benzineIn},${s.benzineOut},${s.benzineIn - s.benzineOut}\n`;
+      });
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "benishangul_gumuz_fuel_report.csv";
+      a.click();
+    }
+
+    pullUsersFromCloud(false);
+    if (currentUser) {
+      bootApp();
+    }
+  </script>
+</body>
+</html>
